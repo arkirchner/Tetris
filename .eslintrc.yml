@@ -1,0 +1,17 @@
+---
+
+env:
+  node: true
+  browser: true
+  es6: true
+parser: babel-eslint
+extends:
+  - airbnb
+  - plugin:jest/recommended
+  - prettier
+plugins:
+  - jest
+  - prettier
+rules:
+  react/jsx-filename-extension: [1, { "extensions": [".js", ".jsx"] }]
+  prettier/prettier: "error"

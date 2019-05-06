@@ -1,4 +1,4 @@
-import { ADD_PIECE_TO_BOARD } from '../actions/types';
+import { ADD_PIECE_TO_BOARD, MOVE_PIECE_DOWN } from '../actions/types';
 
 export const BOARD_SIZE = { columns: 12, rows: 20 };
 
@@ -22,6 +22,21 @@ export default function boardReducer(state = EMPTY_BOARD, action) {
 
         return row;
       });
+    case MOVE_PIECE_DOWN:
+      return state
+        .reverse()
+        .map((row, rowIndex, reversedRows) => {
+          const nextRow = reversedRows[rowIndex + 1] || [];
+
+          return row
+            .map(tile => (tile === 1 ? 0 : tile))
+            .map((tile, index) => {
+              const nextTile = nextRow[index];
+
+              return nextTile === 1 ? nextTile : tile;
+            });
+        })
+        .reverse();
     default:
       return state;
   }

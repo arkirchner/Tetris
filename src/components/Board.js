@@ -1,15 +1,16 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import BoardTile from './BoardTile';
+import { addPieceToBoard } from '../actions';
 
 const styles = StyleSheet.create({
   board: { flex: 1 },
   row: { flex: 1, flexDirection: 'row' }
 });
 
-function Board({ board }) {
+function Board({ board, addPieceToBoard: addPiece }) {
   const rows = board.map((row, rowIndex) => {
     // Array length is constant. Index can be used as key!
     /* eslint-disable react/no-array-index-key */
@@ -22,13 +23,21 @@ function Board({ board }) {
     );
   });
 
-  return <View style={styles.board}>{rows}</View>;
+  return (
+    <TouchableOpacity onPress={() => addPiece([[1, 1], [1, 1]])} style={styles.board}>
+      {rows}
+    </TouchableOpacity>
+  );
 }
 
 Board.propTypes = {
-  board: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)).isRequired
+  board: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)).isRequired,
+  addPieceToBoard: PropTypes.func.isRequired
 };
 
 const mapStateToProps = ({ board }) => ({ board });
 
-export default connect(mapStateToProps)(Board);
+export default connect(
+  mapStateToProps,
+  { addPieceToBoard }
+)(Board);

@@ -18,8 +18,12 @@ function BoardTile({ tile }) {
   );
 }
 
+BoardTile.defaultProps = {
+  tile: null
+};
+
 BoardTile.propTypes = {
-  tile: PropTypes.number.isRequired
+  tile: PropTypes.number
 };
 
 export default BoardTile;

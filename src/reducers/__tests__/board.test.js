@@ -10,7 +10,7 @@ describe('board reducer', () => {
 
     expect(board.length).toEqual(BOARD_SIZE.rows);
     expect(distinctRowCount).toEqual([BOARD_SIZE.columns]);
-    expect(distinctFieldValues).toEqual([0]);
+    expect(distinctFieldValues).toEqual([null]);
   });
 
   it('can add a piece to the board', () => {
@@ -18,9 +18,9 @@ describe('board reducer', () => {
     const board = boardReducer(undefined, { type: ADD_PIECE_TO_BOARD, payload: piece });
 
     expect(board.slice(0, 3)).toEqual([
-      [0, 0, 0, 0, 0, ...piece[0], 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, ...piece[1], 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+      [null, null, null, null, null, ...piece[0], null, null, null, null, null],
+      [null, null, null, null, null, ...piece[1], null, null, null, null, null],
+      [null, null, null, null, null, null, null, null, null, null, null, null]
     ]);
   });
 
@@ -32,10 +32,10 @@ describe('board reducer', () => {
     );
 
     expect(board.slice(0, 4)).toEqual([
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, ...piece[0], 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, ...piece[1], 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+      [null, null, null, null, null, null, null, null, null, null, null, null],
+      [null, null, null, null, null, ...piece[0], null, null, null, null, null],
+      [null, null, null, null, null, ...piece[1], null, null, null, null, null],
+      [null, null, null, null, null, null, null, null, null, null, null, null]
     ]);
   });
 });

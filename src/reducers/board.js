@@ -3,8 +3,8 @@ import { ADD_PIECE_TO_BOARD, MOVE_PIECE_DOWN } from '../actions/types';
 export const BOARD_SIZE = { columns: 12, rows: 20 };
 
 const EMPTY_BOARD = Array(BOARD_SIZE.rows)
-  .fill(0)
-  .map(() => Array(BOARD_SIZE.columns).fill(0));
+  .fill(null)
+  .map(() => Array(BOARD_SIZE.columns).fill(null));
 
 export default function boardReducer(state = EMPTY_BOARD, action) {
   switch (action.type) {
@@ -29,7 +29,7 @@ export default function boardReducer(state = EMPTY_BOARD, action) {
           const nextRow = reversedRows[rowIndex + 1] || [];
 
           return row
-            .map(tile => (tile === 1 ? 0 : tile))
+            .map(tile => (tile === 1 ? null : tile))
             .map((tile, index) => {
               const nextTile = nextRow[index];
 

@@ -13,7 +13,7 @@ function Lucy() {
   return [[null, null, orange()], [orange(), orange(), orange()]];
 }
 
-function Smasgboy() {
+export function Smasgboy() {
   return [[yellow(), yellow()], [yellow(), yellow()]];
 }
 

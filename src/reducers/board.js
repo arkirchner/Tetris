@@ -29,11 +29,11 @@ export default function boardReducer(state = EMPTY_BOARD, action) {
           const nextRow = reversedRows[rowIndex + 1] || [];
 
           return row
-            .map(tile => (tile === 1 ? null : tile))
+            .map(tile => (tile && tile.dropped === false ? null : tile))
             .map((tile, index) => {
               const nextTile = nextRow[index];
 
-              return nextTile === 1 ? nextTile : tile;
+              return nextTile && nextTile.dropped === false ? nextTile : tile;
             });
         })
         .reverse();

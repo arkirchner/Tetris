@@ -1,12 +1,42 @@
-import { ADD_PIECE_TO_BOARD, MOVE_PIECE_DOWN } from '../actions/types';
+import { ADD_PIECE_TO_BOARD, MOVE_PIECE_DOWN, STOP_PIECE_DROPPING } from '../actions/types';
 
 export const BOARD_SIZE = { columns: 12, rows: 20 };
 
-const EMPTY_BOARD = Array(BOARD_SIZE.rows)
-  .fill(null)
-  .map(() => Array(BOARD_SIZE.columns).fill(null));
+function emptyBoard() {
+  return Array(BOARD_SIZE.rows)
+    .fill(null)
+    .map(() => Array(BOARD_SIZE.columns).fill(null));
+}
 
-export default function boardReducer(state = EMPTY_BOARD, action) {
+function tileDropped(tile, nextRow, index) {
+  if (tile && tile.dropped === false) {
+    // has the tile reached the end of the board?
+    if (!nextRow) {
+      return true;
+    }
+
+    const nextTile = nextRow[index];
+
+    return nextTile ? nextTile.dropped : false;
+  }
+
+  return false;
+}
+
+function boardDropped(board) {
+  return board.reduce((dropped, row, rowIndex) => {
+    const nextRow = board[rowIndex + 1];
+
+    return (
+      dropped ||
+      row.reduce((droppedTile, tile, index) => {
+        return droppedTile || tileDropped(tile, nextRow, index);
+      }, false)
+    );
+  }, false);
+}
+
+export default function boardReducer(state = emptyBoard(), action) {
   switch (action.type) {
     case ADD_PIECE_TO_BOARD:
       return state.map((row, rowIndex) => {
@@ -37,6 +67,14 @@ export default function boardReducer(state = EMPTY_BOARD, action) {
             });
         })
         .reverse();
+    case STOP_PIECE_DROPPING:
+      if (boardDropped(state)) {
+        return state.map(row => {
+          return row.map(tile => (tile ? { ...tile, dropped: true } : tile));
+        });
+      }
+
+      return state;
     default:
       return state;
   }

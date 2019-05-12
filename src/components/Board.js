@@ -3,7 +3,7 @@ import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import BoardTile from './BoardTile';
-import { addPieceToBoard, movePieceDown } from '../actions';
+import { addPieceToBoard, updateBoard } from '../actions';
 
 const styles = StyleSheet.create({
   board: { flex: 1 },
@@ -14,9 +14,9 @@ export const INTERVAL = 500;
 
 class Board extends Component {
   componentDidMount() {
-    const { movePieceDown: down } = this.props;
+    const { updateBoard: update } = this.props;
 
-    this.dropInterval = setInterval(down, INTERVAL);
+    this.dropInterval = setInterval(update, INTERVAL);
   }
 
   componentWillUnmount() {
@@ -53,7 +53,7 @@ class Board extends Component {
 Board.propTypes = {
   board: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)).isRequired,
   addPieceToBoard: PropTypes.func.isRequired,
-  movePieceDown: PropTypes.func.isRequired
+  updateBoard: PropTypes.func.isRequired
 };
 
 const mapStateToProps = ({ board }) => {
@@ -64,5 +64,5 @@ const mapStateToProps = ({ board }) => {
 
 export default connect(
   mapStateToProps,
-  { addPieceToBoard, movePieceDown }
+  { addPieceToBoard, updateBoard }
 )(Board);

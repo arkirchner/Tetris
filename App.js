@@ -1,14 +1,12 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { createStore } from 'redux';
+import { createStore, applyMiddleware } from 'redux';
+import thunk from 'redux-thunk';
 import { Provider } from 'react-redux';
 import reducer from './src/reducers';
 import Board from './src/components/Board';
-import { addPieceToBoard, movePieceDown } from './src/actions';
 
-const store = createStore(reducer);
-
-store.dispatch(addPieceToBoard([[1, 1], [1, 1]]));
+const store = createStore(reducer, {}, applyMiddleware(thunk));
 
 const styles = StyleSheet.create({
   container: {

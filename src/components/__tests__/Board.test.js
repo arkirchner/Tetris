@@ -1,14 +1,15 @@
 import React from 'react';
 import { render, fireEvent } from 'react-native-testing-library';
 import configureStore from 'redux-mock-store';
+import thunk from 'redux-thunk';
 import { Provider } from 'react-redux';
 import Board, { INTERVAL } from '../Board';
 import BoardTile from '../BoardTile';
 import boardReducer from '../../reducers/board';
-import { movePieceDown } from '../../actions';
+import { movePieceDown, stopPieceDropping } from '../../actions';
 import { ADD_PIECE_TO_BOARD } from '../../actions/types';
 
-const middlewares = [];
+const middlewares = [thunk];
 const mockStore = configureStore(middlewares);
 
 describe('Board', () => {
@@ -32,7 +33,12 @@ describe('Board', () => {
     );
 
     setTimeout(() => {
-      expect(store.getActions()).toEqual([movePieceDown(), movePieceDown()]);
+      expect(store.getActions()).toEqual([
+        stopPieceDropping(),
+        movePieceDown(),
+        stopPieceDropping(),
+        movePieceDown()
+      ]);
       done();
     }, INTERVAL * 2 + 50);
   });

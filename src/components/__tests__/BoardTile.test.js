@@ -1,13 +1,15 @@
 import React from 'react';
 import { render } from 'react-native-testing-library';
+import compact from 'lodash/compact';
 import BoardTile from '../BoardTile';
+import randomTetromino from '../../tetrominos';
 
 describe('BoardTile', () => {
-  it('shows the tile', () => {
-    const tile = 2;
+  it('renders without error', () => {
+    const { color } = compact(randomTetromino()[0])[0];
 
-    const { getByText } = render(<BoardTile tile={tile} />);
+    const { getByType } = render(<BoardTile color={color} />);
 
-    expect(getByText(`${tile}`)).not.toBeNull();
+    expect(getByType(BoardTile)).not.toBeNull();
   });
 });

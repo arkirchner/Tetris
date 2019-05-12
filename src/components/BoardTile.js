@@ -1,29 +1,19 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import PropTypes from 'prop-types';
 
 const styles = StyleSheet.create({
   tile: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center'
+    flex: 1
   }
 });
 
-function BoardTile({ tile }) {
-  return (
-    <View style={styles.tile}>
-      <Text>{tile}</Text>
-    </View>
-  );
+function BoardTile({ color }) {
+  return <View style={{ ...styles.tile, backgroundColor: color }} />;
 }
 
-BoardTile.defaultProps = {
-  tile: null
-};
-
 BoardTile.propTypes = {
-  tile: PropTypes.number
+  color: PropTypes.string.isRequired
 };
 
 export default BoardTile;

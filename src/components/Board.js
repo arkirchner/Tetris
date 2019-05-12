@@ -31,9 +31,9 @@ class Board extends Component {
       /* eslint-disable react/no-array-index-key */
       return (
         <View style={styles.row} key={rowIndex}>
-          {row.map((tile, index) => (
-            <BoardTile tile={tile} key={rowIndex + index} />
-          ))}
+          {row.map((color, index) => {
+            return <BoardTile color={color} key={rowIndex + index} />;
+          })}
         </View>
       );
     });
@@ -43,7 +43,7 @@ class Board extends Component {
     const { addPieceToBoard: addPiece } = this.props;
 
     return (
-      <TouchableOpacity onPress={() => addPiece([[1, 1], [1, 1]])} style={styles.board}>
+      <TouchableOpacity onPress={() => addPiece()} style={styles.board}>
         {this.renderRows()}
       </TouchableOpacity>
     );
@@ -51,12 +51,16 @@ class Board extends Component {
 }
 
 Board.propTypes = {
-  board: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)).isRequired,
+  board: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)).isRequired,
   addPieceToBoard: PropTypes.func.isRequired,
   movePieceDown: PropTypes.func.isRequired
 };
 
-const mapStateToProps = ({ board }) => ({ board });
+const mapStateToProps = ({ board }) => {
+  return {
+    board: board.map(row => row.map(tile => (tile ? tile.color : 'white')))
+  };
+};
 
 export default connect(
   mapStateToProps,

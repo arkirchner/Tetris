@@ -5,7 +5,8 @@ import { Provider } from 'react-redux';
 import Board, { INTERVAL } from '../Board';
 import BoardTile from '../BoardTile';
 import boardReducer from '../../reducers/board';
-import { movePieceDown, addPieceToBoard } from '../../actions';
+import { movePieceDown } from '../../actions';
+import { ADD_PIECE_TO_BOARD } from '../../actions/types';
 
 const middlewares = [];
 const mockStore = configureStore(middlewares);
@@ -46,6 +47,6 @@ describe('Board', () => {
 
     fireEvent.press(getAllByType(BoardTile)[0]);
 
-    expect(store.getActions()).toEqual([addPieceToBoard([[1, 1], [1, 1]])]);
+    expect(store.getActions()[0].type).toEqual(ADD_PIECE_TO_BOARD);
   });
 });

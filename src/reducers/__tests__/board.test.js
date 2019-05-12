@@ -1,6 +1,5 @@
-import randomTetromino from '../../tetrominos';
 import boardReducer, { BOARD_SIZE } from '../board';
-import { ADD_PIECE_TO_BOARD, MOVE_PIECE_DOWN } from '../../actions/types';
+import { addPieceToBoard, movePieceDown } from '../../actions';
 
 describe('board reducer', () => {
   it('should return the initial state', () => {
@@ -15,8 +14,9 @@ describe('board reducer', () => {
   });
 
   it('can add a piece to the board', () => {
-    const piece = randomTetromino();
-    const board = boardReducer(undefined, { type: ADD_PIECE_TO_BOARD, payload: piece });
+    const action = addPieceToBoard();
+    const piece = action.payload;
+    const board = boardReducer(undefined, action);
 
     expect(board.slice(0, piece.length + 1)).toEqual([
       ...piece.map(row => [
@@ -33,11 +33,9 @@ describe('board reducer', () => {
   });
 
   it('can move a piece on step down', () => {
-    const piece = randomTetromino();
-    const board = boardReducer(
-      boardReducer(undefined, { type: ADD_PIECE_TO_BOARD, payload: piece }),
-      { type: MOVE_PIECE_DOWN }
-    );
+    const action = addPieceToBoard();
+    const piece = action.payload;
+    const board = boardReducer(boardReducer(undefined, action), movePieceDown());
 
     expect(board.slice(0, piece.length + 2)).toEqual([
       [null, null, null, null, null, null, null, null, null, null, null, null],

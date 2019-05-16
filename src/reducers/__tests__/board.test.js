@@ -1,7 +1,13 @@
 import compact from 'lodash/compact';
 import randomTetromino from '../../tetrominos';
 import boardReducer, { BOARD_SIZE } from '../board';
-import { addPieceToBoard, movePieceDown, stopPieceDropping } from '../../actions';
+import {
+  addPieceToBoard,
+  movePieceDown,
+  stopPieceDropping,
+  movePieceRight,
+  movePieceLeft
+} from '../../actions';
 
 describe('board reducer', () => {
   it('should return the initial state', () => {
@@ -52,6 +58,98 @@ describe('board reducer', () => {
       ]),
       [null, null, null, null, null, null, null, null, null, null, null, null]
     ]);
+  });
+
+  describe('movePieceRight', () => {
+    it('moves the tiles to the right', () => {
+      const tile = compact(randomTetromino()[0])[0];
+      const board = boardReducer(undefined, {});
+
+      // movable tiles
+      board[0][3] = { ...tile };
+      board[0][4] = { ...tile };
+
+      // fixed tiles
+      board[BOARD_SIZE.rows - 1][3] = { ...tile, dropped: true };
+      board[BOARD_SIZE.rows - 1][4] = { ...tile, dropped: true };
+
+      const movedBoard = boardReducer(board, movePieceRight());
+
+      // moved the movable tiles
+      expect(movedBoard[0][3]).toBeNull();
+      expect(movedBoard[0][4]).toEqual(board[0][3]);
+      expect(movedBoard[0][5]).toEqual(board[0][4]);
+
+      // did not move fixed tiles
+      expect(movedBoard[BOARD_SIZE.rows - 1][2]).toBeNull();
+      expect(movedBoard[BOARD_SIZE.rows - 1][3]).toEqual(board[BOARD_SIZE.rows - 1][3]);
+      expect(movedBoard[BOARD_SIZE.rows - 1][4]).toEqual(board[BOARD_SIZE.rows - 1][4]);
+    });
+
+    it('dose not move the piece if it is blocked', () => {
+      const tile = compact(randomTetromino()[0])[0];
+      const board = boardReducer(undefined, {});
+
+      // movable tiles
+      board[3][3] = { ...tile };
+      board[3][4] = { ...tile };
+
+      // fixed tiles
+      board[3][5] = { ...tile, dropped: true };
+
+      const movedBoard = boardReducer(board, movePieceRight());
+
+      // no pieces have been moved
+      expect(movedBoard[3][3]).toEqual(board[3][3]);
+      expect(movedBoard[3][4]).toEqual(board[3][4]);
+      expect(movedBoard[3][5]).toEqual(board[3][5]);
+    });
+  });
+
+  describe('movePieceLeft', () => {
+    it('moves the tiles to the left', () => {
+      const tile = compact(randomTetromino()[0])[0];
+      const board = boardReducer(undefined, {});
+
+      // movable tiles
+      board[0][3] = { ...tile };
+      board[0][4] = { ...tile };
+
+      // fixed tiles
+      board[BOARD_SIZE.rows - 1][3] = { ...tile, dropped: true };
+      board[BOARD_SIZE.rows - 1][4] = { ...tile, dropped: true };
+
+      const movedBoard = boardReducer(board, movePieceLeft());
+
+      // moved the movable tiles
+      expect(movedBoard[0][2]).toEqual(board[0][3]);
+      expect(movedBoard[0][3]).toEqual(board[0][4]);
+      expect(movedBoard[0][4]).toBeNull();
+
+      // did not move fixed tiles
+      expect(movedBoard[BOARD_SIZE.rows - 1][2]).toBeNull();
+      expect(movedBoard[BOARD_SIZE.rows - 1][3]).toEqual(board[BOARD_SIZE.rows - 1][3]);
+      expect(movedBoard[BOARD_SIZE.rows - 1][4]).toEqual(board[BOARD_SIZE.rows - 1][4]);
+    });
+
+    it('dose not move the piece if it is blocked', () => {
+      const tile = compact(randomTetromino()[0])[0];
+      const board = boardReducer(undefined, {});
+
+      // movable tiles
+      board[3][3] = { ...tile };
+      board[3][4] = { ...tile };
+
+      // fixed tiles
+      board[3][2] = { ...tile, dropped: true };
+
+      const movedBoard = boardReducer(board, movePieceLeft());
+
+      // no pieces have been moved
+      expect(movedBoard[3][2]).toEqual(board[3][2]);
+      expect(movedBoard[3][3]).toEqual(board[3][3]);
+      expect(movedBoard[3][4]).toEqual(board[3][4]);
+    });
   });
 
   describe('stopPieceDropping', () => {

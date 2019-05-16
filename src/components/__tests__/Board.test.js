@@ -5,6 +5,7 @@ import thunk from 'redux-thunk';
 import { Provider } from 'react-redux';
 import Board, { INTERVAL } from '../Board';
 import BoardTile from '../BoardTile';
+import BoardButton from '../BoardButton';
 import boardReducer from '../../reducers/board';
 import { movePieceDown, stopPieceDropping } from '../../actions';
 import { ADD_PIECE_TO_BOARD } from '../../actions/types';
@@ -51,7 +52,7 @@ describe('Board', () => {
       </Provider>
     );
 
-    fireEvent.press(getAllByType(BoardTile)[0]);
+    fireEvent.press(getAllByType(BoardButton)[1]);
 
     expect(store.getActions()[0].type).toEqual(ADD_PIECE_TO_BOARD);
   });

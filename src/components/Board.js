@@ -1,13 +1,28 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import BoardTile from './BoardTile';
-import { addPieceToBoard, updateBoard } from '../actions';
+import BoardButton from './BoardButton';
+import { addPieceToBoard, updateBoard, movePieceLeft, movePieceRight } from '../actions';
 
 const styles = StyleSheet.create({
   board: { flex: 1 },
-  row: { flex: 1, flexDirection: 'row' }
+  row: { flex: 1, flexDirection: 'row' },
+  menu: {
+    position: 'absolute',
+    flexDirection: 'row',
+    left: 0,
+    bottom: 0,
+    width: '100%',
+    height: '15%',
+    opacity: 0.3
+  },
+  button: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
+  }
 });
 
 export const INTERVAL = 500;
@@ -40,12 +55,21 @@ class Board extends Component {
   }
 
   render() {
-    const { addPieceToBoard: addPiece } = this.props;
+    const {
+      addPieceToBoard: addPiece,
+      movePieceLeft: moveLeft,
+      movePieceRight: moveRight
+    } = this.props;
 
     return (
-      <TouchableOpacity onPress={() => addPiece()} style={styles.board}>
+      <View style={styles.board}>
         {this.renderRows()}
-      </TouchableOpacity>
+        <View style={styles.menu}>
+          <BoardButton icon="md-arrow-round-back" onPress={() => moveLeft()} />
+          <BoardButton icon="md-arrow-round-down" onPress={() => addPiece()} />
+          <BoardButton icon="md-arrow-round-forward" onPress={() => moveRight()} />
+        </View>
+      </View>
     );
   }
 }
@@ -53,6 +77,8 @@ class Board extends Component {
 Board.propTypes = {
   board: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)).isRequired,
   addPieceToBoard: PropTypes.func.isRequired,
+  movePieceLeft: PropTypes.func.isRequired,
+  movePieceRight: PropTypes.func.isRequired,
   updateBoard: PropTypes.func.isRequired
 };
 
@@ -64,5 +90,5 @@ const mapStateToProps = ({ board }) => {
 
 export default connect(
   mapStateToProps,
-  { addPieceToBoard, updateBoard }
+  { addPieceToBoard, updateBoard, movePieceLeft, movePieceRight }
 )(Board);

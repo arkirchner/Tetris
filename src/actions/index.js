@@ -1,5 +1,11 @@
 import randomTetromino from '../tetrominos';
-import { ADD_PIECE_TO_BOARD, MOVE_PIECE_DOWN, STOP_PIECE_DROPPING } from './types';
+import {
+  ADD_PIECE_TO_BOARD,
+  MOVE_PIECE_DOWN,
+  STOP_PIECE_DROPPING,
+  MOVE_PIECE_LEFT,
+  MOVE_PIECE_RIGHT
+} from './types';
 
 export function addPieceToBoard() {
   return {
@@ -22,4 +28,12 @@ export function updateBoard() {
 
     return dispatch(movePieceDown());
   };
+}
+
+export function movePieceLeft() {
+  return { type: MOVE_PIECE_LEFT };
+}
+
+export function movePieceRight() {
+  return { type: MOVE_PIECE_RIGHT };
 }

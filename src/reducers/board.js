@@ -84,22 +84,31 @@ function canMoveToLeft(board) {
     .includes(false);
 }
 
+function boardNeedsPiece(board) {
+  return !board.flat().some(tile => tile && tile.dropped === false);
+}
+
 export default function boardReducer(state = emptyBoard(), action) {
   switch (action.type) {
     case ADD_PIECE_TO_BOARD:
-      return state.map((row, rowIndex) => {
-        const insertAt = BOARD_SIZE.columns / 2 - 1;
-        const pieceRow = action.payload[rowIndex];
+      if (boardNeedsPiece(state)) {
+        return state.map((row, rowIndex) => {
+          const insertAt = BOARD_SIZE.columns / 2 - 1;
+          const pieceRow = action.payload[rowIndex];
 
-        if (pieceRow) {
-          return row.map((tile, index) => {
-            const tilePiece = pieceRow[index - insertAt];
-            return tilePiece || tile;
-          });
-        }
+          if (pieceRow) {
+            return row.map((tile, index) => {
+              const tilePiece = pieceRow[index - insertAt];
+              return tilePiece || tile;
+            });
+          }
 
-        return row;
-      });
+          return row;
+        });
+      }
+
+      return state;
+
     case MOVE_PIECE_DOWN:
       return state
         .reverse()

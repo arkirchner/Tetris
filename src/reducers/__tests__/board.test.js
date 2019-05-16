@@ -21,23 +21,38 @@ describe('board reducer', () => {
     expect(distinctFieldValues).toEqual([null]);
   });
 
-  it('can add a piece to the board', () => {
-    const action = addPieceToBoard();
-    const piece = action.payload;
-    const board = boardReducer(undefined, action);
+  describe('addPieceToBoard', () => {
+    it('can add a piece to the board', () => {
+      const action = addPieceToBoard();
+      const piece = action.payload;
+      const board = boardReducer(undefined, action);
 
-    expect(board.slice(0, piece.length + 1)).toEqual([
-      ...piece.map(row => [
-        null,
-        null,
-        null,
-        null,
-        null,
-        ...row,
-        ...Array(7 - row.length).fill(null)
-      ]),
-      [null, null, null, null, null, null, null, null, null, null, null, null]
-    ]);
+      expect(board.slice(0, piece.length + 1)).toEqual([
+        ...piece.map(row => [
+          null,
+          null,
+          null,
+          null,
+          null,
+          ...row,
+          ...Array(7 - row.length).fill(null)
+        ]),
+        [null, null, null, null, null, null, null, null, null, null, null, null]
+      ]);
+    });
+
+    it('no piece is added when the board has a dropping piece', () => {
+      const tile = compact(randomTetromino()[0])[0];
+      const board = boardReducer(undefined, {});
+
+      // movable tiles
+      board[4][3] = { ...tile };
+      board[4][4] = { ...tile };
+
+      const unchangedBoard = boardReducer(board, addPieceToBoard());
+
+      expect(board).toEqual(unchangedBoard);
+    });
   });
 
   it('can move a piece on step down', () => {

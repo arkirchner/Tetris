@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 
 const styles = StyleSheet.create({
   tile: {
@@ -16,4 +17,12 @@ BoardTile.propTypes = {
   color: PropTypes.string.isRequired
 };
 
-export default BoardTile;
+const mapStateToProps = ({ board }, { row, column }) => {
+  const tile = board[row][column];
+
+  return {
+    color: tile ? tile.color : 'white'
+  };
+};
+
+export default connect(mapStateToProps)(BoardTile);

@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import BoardTile from './BoardTile';
 import BoardButton from './BoardButton';
+import { BOARD_SIZE } from '../reducers/board';
 import { addPieceToBoard, updateBoard, movePieceLeft, movePieceRight } from '../actions';
 
 const styles = StyleSheet.create({
@@ -22,6 +23,9 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center'
+  },
+  tile: {
+    flex: 1
   }
 });
 
@@ -39,19 +43,23 @@ class Board extends Component {
   }
 
   renderRows() {
-    const { board } = this.props;
-
-    return board.map((row, rowIndex) => {
-      // Array length is constant. Index can be used as key!
-      /* eslint-disable react/no-array-index-key */
-      return (
-        <View style={styles.row} key={rowIndex}>
-          {row.map((color, index) => {
-            return <BoardTile color={color} key={rowIndex + index} />;
-          })}
-        </View>
-      );
-    });
+    return Array(BOARD_SIZE.rows)
+      .fill()
+      .map((_, rowIndex) => {
+        return (
+          <View style={styles.row} key={rowIndex}>
+            {Array(BOARD_SIZE.columns)
+              .fill()
+              .map((_, columnIndex) => {
+                return (
+                  <View style={styles.tile} key={`${rowIndex}${columnIndex}`}>
+                    <BoardTile row={rowIndex} column={columnIndex} />
+                  </View>
+                );
+              })}
+          </View>
+        );
+      });
   }
 
   render() {
@@ -75,20 +83,13 @@ class Board extends Component {
 }
 
 Board.propTypes = {
-  board: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)).isRequired,
   addPieceToBoard: PropTypes.func.isRequired,
   movePieceLeft: PropTypes.func.isRequired,
   movePieceRight: PropTypes.func.isRequired,
   updateBoard: PropTypes.func.isRequired
 };
 
-const mapStateToProps = ({ board }) => {
-  return {
-    board: board.map(row => row.map(tile => (tile ? tile.color : 'white')))
-  };
-};
-
 export default connect(
-  mapStateToProps,
+  null,
   { addPieceToBoard, updateBoard, movePieceLeft, movePieceRight }
 )(Board);

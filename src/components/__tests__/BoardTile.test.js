@@ -1,14 +1,22 @@
 import React from 'react';
 import { render } from 'react-native-testing-library';
-import compact from 'lodash/compact';
+import { Provider } from 'react-redux';
+import configureStore from 'redux-mock-store';
+import thunk from 'redux-thunk';
+import boardReducer from '../../reducers/board';
 import BoardTile from '../BoardTile';
-import randomTetromino from '../../tetrominos';
+
+const middlewares = [thunk];
+const mockStore = configureStore(middlewares);
 
 describe('BoardTile', () => {
   it('renders without error', () => {
-    const { color } = compact(randomTetromino()[0])[0];
-
-    const { getByType } = render(<BoardTile color={color} />);
+    const store = mockStore({ board: boardReducer(undefined, {}) });
+    const { getByType } = render(
+      <Provider store={store}>
+        <BoardTile row={1} column={1} />
+      </Provider>
+    );
 
     expect(getByType(BoardTile)).not.toBeNull();
   });

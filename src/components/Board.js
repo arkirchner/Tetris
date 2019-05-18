@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import BoardTile from './BoardTile';
 import BoardButton from './BoardButton';
-import { BOARD_SIZE } from '../reducers/board';
+import { BOARD_SIZE } from '../tetris';
 import { addPieceToBoard, updateBoard, movePieceLeft, movePieceRight } from '../actions';
 
 const styles = StyleSheet.create({

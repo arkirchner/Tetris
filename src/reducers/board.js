@@ -6,160 +6,27 @@ import {
   MOVE_PIECE_RIGHT
 } from '../actions/types';
 
-export const BOARD_SIZE = { columns: 12, rows: 20 };
-
-function emptyBoard() {
-  return Array(BOARD_SIZE.rows)
-    .fill(null)
-    .map(() => Array(BOARD_SIZE.columns).fill(null));
-}
-
-function tileDropped(tile, nextRow, index) {
-  if (tile && tile.dropped === false) {
-    // has the tile reached the end of the board?
-    if (!nextRow) {
-      return true;
-    }
-
-    const nextTile = nextRow[index];
-
-    return nextTile ? nextTile.dropped : false;
-  }
-
-  return false;
-}
-
-function boardDropped(board) {
-  return board.reduce((dropped, row, rowIndex) => {
-    const nextRow = board[rowIndex + 1];
-
-    return (
-      dropped ||
-      row.reduce((droppedTile, tile, index) => {
-        return droppedTile || tileDropped(tile, nextRow, index);
-      }, false)
-    );
-  }, false);
-}
-
-function canMoveToRight(board) {
-  return !board
-    .map(row => {
-      return row.map((tile, index) => {
-        const rightTile = row[index + 1];
-
-        if (
-          tile &&
-          tile.dropped === false &&
-          (rightTile === undefined || (rightTile && rightTile.dropped))
-        ) {
-          return false;
-        }
-
-        return true;
-      });
-    })
-    .flat()
-    .includes(false);
-}
-
-function canMoveToLeft(board) {
-  return !board
-    .map(row => {
-      return row.map((tile, index) => {
-        const leftTile = row[index - 1];
-
-        if (
-          tile &&
-          tile.dropped === false &&
-          (leftTile === undefined || (leftTile && leftTile.dropped))
-        ) {
-          return false;
-        }
-
-        return true;
-      });
-    })
-    .flat()
-    .includes(false);
-}
-
-function boardNeedsPiece(board) {
-  return !board.flat().some(tile => tile && tile.dropped === false);
-}
+import {
+  emptyBoard,
+  movePieceRight,
+  movePieceLeft,
+  addPiece,
+  movePieceDown,
+  stopPieceDropping
+} from '../tetris';
 
 export default function boardReducer(state = emptyBoard(), action) {
   switch (action.type) {
     case ADD_PIECE_TO_BOARD:
-      if (boardNeedsPiece(state)) {
-        return state.map((row, rowIndex) => {
-          const insertAt = BOARD_SIZE.columns / 2 - 1;
-          const pieceRow = action.payload[rowIndex];
-
-          if (pieceRow) {
-            return row.map((tile, index) => {
-              const tilePiece = pieceRow[index - insertAt];
-              return tilePiece || tile;
-            });
-          }
-
-          return row;
-        });
-      }
-
-      return state;
-
+      return addPiece(state, action.payload);
     case MOVE_PIECE_DOWN:
-      return state
-        .reverse()
-        .map((row, rowIndex, reversedRows) => {
-          const nextRow = reversedRows[rowIndex + 1] || [];
-
-          return row
-            .map(tile => (tile && tile.dropped === false ? null : tile))
-            .map((tile, index) => {
-              const nextTile = nextRow[index];
-
-              return nextTile && nextTile.dropped === false ? nextTile : tile;
-            });
-        })
-        .reverse();
+      return movePieceDown(state);
     case STOP_PIECE_DROPPING:
-      if (boardDropped(state)) {
-        return state.map(row => {
-          return row.map(tile => (tile ? { ...tile, dropped: true } : tile));
-        });
-      }
-
-      return state;
+      return stopPieceDropping(state);
     case MOVE_PIECE_LEFT:
-      if (canMoveToLeft(state)) {
-        return state.map(row => {
-          const moveableTiles = row.map(tile => {
-            return tile && tile.dropped === false ? tile : null;
-          });
-
-          return row
-            .map(tile => (tile && tile.dropped === false ? null : tile))
-            .map((tile, index) => moveableTiles[index + 1] || tile);
-        });
-      }
-
-      return state;
+      return movePieceLeft(state);
     case MOVE_PIECE_RIGHT:
-      if (canMoveToRight(state)) {
-        return state.map(row => {
-          const moveableTiles = row.map(tile => {
-            return tile && tile.dropped === false ? tile : null;
-          });
-
-          return row
-            .map(tile => (tile && tile.dropped === false ? null : tile))
-            .map((tile, index) => moveableTiles[index - 1] || tile);
-        });
-      }
-
-      return state;
+      return movePieceRight(state);
     default:
       return state;
   }

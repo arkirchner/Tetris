@@ -1,12 +1,6 @@
 import boardReducer from '../board';
 import * as tetris from '../../tetris';
-import {
-  addPieceToBoard,
-  movePieceDown,
-  stopPieceDropping,
-  movePieceRight,
-  movePieceLeft
-} from '../../actions';
+import { updateBoard, addPieceToBoard, movePieceRight, movePieceLeft } from '../../actions';
 
 function hasValidBoardSize(board) {
   const distinctRowCount = Array.from(new Set(board.map(row => row.length)));
@@ -28,27 +22,18 @@ describe('boardReducer', () => {
     spy.mockRestore();
   });
 
+  it('UPDATE_BOARD', () => {
+    const syp = jest.spyOn(tetris, 'update');
+    const board = boardReducer(undefined, updateBoard());
+    expect(syp).toHaveBeenCalled();
+    hasValidBoardSize(board);
+
+    syp.mockRestore();
+  });
+
   it('ADD_PIECE_TO_BOARD', () => {
     const syp = jest.spyOn(tetris, 'addPiece');
     const board = boardReducer(undefined, addPieceToBoard());
-    expect(syp).toHaveBeenCalled();
-    hasValidBoardSize(board);
-
-    syp.mockRestore();
-  });
-
-  it('MOVE_PIECE_DOWN', () => {
-    const syp = jest.spyOn(tetris, 'movePieceDown');
-    const board = boardReducer(undefined, movePieceDown());
-    expect(syp).toHaveBeenCalled();
-    hasValidBoardSize(board);
-
-    syp.mockRestore();
-  });
-
-  it('STOP_PIECE_DROPPING', () => {
-    const syp = jest.spyOn(tetris, 'stopPieceDropping');
-    const board = boardReducer(undefined, stopPieceDropping());
     expect(syp).toHaveBeenCalled();
     hasValidBoardSize(board);
 

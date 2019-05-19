@@ -6,11 +6,11 @@ export function emptyBoard() {
     .map(() => Array(BOARD_SIZE.columns).fill(null));
 }
 
-export function boardNeedsPiece(board) {
+function boardNeedsPiece(board) {
   return !board.flat().some(tile => tile && tile.dropped === false);
 }
 
-export function movePieceDown(board) {
+function movePieceDown(board) {
   return board
     .reverse()
     .map((row, rowIndex, reversedRows) => {
@@ -27,7 +27,7 @@ export function movePieceDown(board) {
     .reverse();
 }
 
-export function tileDropped(tile, nextRow, index) {
+function tileDropped(tile, nextRow, index) {
   if (tile && tile.dropped === false) {
     // has the tile reached the end of the board?
     if (!nextRow) {
@@ -42,7 +42,7 @@ export function tileDropped(tile, nextRow, index) {
   return false;
 }
 
-export function boardDropped(board) {
+function boardDropped(board) {
   return board.reduce((dropped, row, rowIndex) => {
     const nextRow = board[rowIndex + 1];
 
@@ -55,7 +55,7 @@ export function boardDropped(board) {
   }, false);
 }
 
-export function stopPieceDropping(board) {
+function stopPieceDropping(board) {
   if (boardDropped(board)) {
     return board.map(row => {
       return row.map(tile => (tile ? { ...tile, dropped: true } : tile));
@@ -85,7 +85,11 @@ export function addPiece(board, piece) {
   return board;
 }
 
-export function canMoveToRight(board) {
+export function update(board) {
+  return movePieceDown(stopPieceDropping(board));
+}
+
+function canMoveToRight(board) {
   return !board
     .map(row => {
       return row.map((tile, index) => {
@@ -106,7 +110,7 @@ export function canMoveToRight(board) {
     .includes(false);
 }
 
-export function canMoveToLeft(board) {
+function canMoveToLeft(board) {
   return !board
     .map(row => {
       return row.map((tile, index) => {

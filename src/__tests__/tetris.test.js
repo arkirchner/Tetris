@@ -1,14 +1,6 @@
 import compact from 'lodash/compact';
 import randomTetromino from '../tetrominos';
-import {
-  BOARD_SIZE,
-  emptyBoard,
-  addPiece,
-  movePieceDown,
-  movePieceLeft,
-  movePieceRight,
-  stopPieceDropping
-} from '../tetris';
+import { BOARD_SIZE, emptyBoard, addPiece, update, movePieceLeft, movePieceRight } from '../tetris';
 
 describe('tetris', () => {
   it('should return a empty board', () => {
@@ -55,23 +47,88 @@ describe('tetris', () => {
     });
   });
 
-  it('can move a piece one step down', () => {
-    const piece = randomTetromino();
-    const board = movePieceDown(addPiece(emptyBoard(), piece));
+  describe('update', () => {
+    it('can move a piece one step down', () => {
+      const piece = randomTetromino();
+      const board = update(addPiece(emptyBoard(), piece));
 
-    expect(board.slice(0, piece.length + 2)).toEqual([
-      [null, null, null, null, null, null, null, null, null, null, null, null],
-      ...piece.map(row => [
-        null,
-        null,
-        null,
-        null,
-        null,
-        ...row,
-        ...Array(7 - row.length).fill(null)
-      ]),
-      [null, null, null, null, null, null, null, null, null, null, null, null]
-    ]);
+      expect(board.slice(0, piece.length + 2)).toEqual([
+        [null, null, null, null, null, null, null, null, null, null, null, null],
+        ...piece.map(row => [
+          null,
+          null,
+          null,
+          null,
+          null,
+          ...row,
+          ...Array(7 - row.length).fill(null)
+        ]),
+        [null, null, null, null, null, null, null, null, null, null, null, null]
+      ]);
+    });
+
+    it('stops a tile dropping before it drops out of the board', () => {
+      const tile = compact(randomTetromino()[0])[0];
+      const board = emptyBoard();
+
+      // add piece to the bottom of the board
+      board[BOARD_SIZE.rows - 1][0] = { ...tile };
+      board[BOARD_SIZE.rows - 1][1] = { ...tile };
+      board[BOARD_SIZE.rows - 2][0] = { ...tile };
+      board[BOARD_SIZE.rows - 3][0] = { ...tile };
+      board[BOARD_SIZE.rows - 4][0] = { ...tile };
+      board[BOARD_SIZE.rows - 4][1] = { ...tile };
+
+      const stoppedBoard = update(board);
+      const droppedState = Array.from(new Set(compact(stoppedBoard.flat()).map(t => t.dropped)));
+
+      expect(droppedState).toEqual([true]);
+    });
+
+    it('stops a piece if it collides with another piece', () => {
+      const tile = compact(randomTetromino()[0])[0];
+      const board = emptyBoard();
+
+      // dropped tiles
+      board[BOARD_SIZE.rows - 1][4] = { ...tile, dropped: true };
+      board[BOARD_SIZE.rows - 1][5] = { ...tile, dropped: true };
+      board[BOARD_SIZE.rows - 2][3] = { ...tile, dropped: true };
+      board[BOARD_SIZE.rows - 2][4] = { ...tile, dropped: true };
+
+      // dropping piece
+      board[BOARD_SIZE.rows - 3][3] = { ...tile };
+      board[BOARD_SIZE.rows - 3][4] = { ...tile };
+      board[BOARD_SIZE.rows - 3][5] = { ...tile };
+      board[BOARD_SIZE.rows - 3][6] = { ...tile };
+      board[BOARD_SIZE.rows - 4][3] = { ...tile };
+
+      const stoppedBoard = update(board);
+      const droppedState = Array.from(new Set(compact(stoppedBoard.flat()).map(t => t.dropped)));
+
+      expect(droppedState).toEqual([true]);
+    });
+
+    it('dose nothing if the piece dose not collide with bottom or another piece', () => {
+      const tile = compact(randomTetromino()[0])[0];
+      const board = emptyBoard();
+
+      // dropped tiles
+      board[BOARD_SIZE.rows - 1][4] = { ...tile, dropped: true };
+      board[BOARD_SIZE.rows - 1][5] = { ...tile, dropped: true };
+      board[BOARD_SIZE.rows - 2][3] = { ...tile, dropped: true };
+      board[BOARD_SIZE.rows - 2][4] = { ...tile, dropped: true };
+
+      // dropping piece
+      board[0][3] = { ...tile };
+      board[0][4] = { ...tile };
+      board[0][5] = { ...tile };
+      board[0][6] = { ...tile };
+
+      const stoppedBoard = update(board);
+      const droppedState = Array.from(new Set(compact(stoppedBoard.flat()).map(t => t.dropped)));
+
+      expect(droppedState).toContain(false);
+    });
   });
 
   describe('movePieceRight', () => {
@@ -163,71 +220,6 @@ describe('tetris', () => {
       expect(movedBoard[3][2]).toEqual(board[3][2]);
       expect(movedBoard[3][3]).toEqual(board[3][3]);
       expect(movedBoard[3][4]).toEqual(board[3][4]);
-    });
-  });
-
-  describe('stopPieceDropping', () => {
-    it('stops a tile dropping before it drops out of the board', () => {
-      const tile = compact(randomTetromino()[0])[0];
-      const board = emptyBoard();
-
-      // add piece to the bottom of the board
-      board[BOARD_SIZE.rows - 1][0] = { ...tile };
-      board[BOARD_SIZE.rows - 1][1] = { ...tile };
-      board[BOARD_SIZE.rows - 2][0] = { ...tile };
-      board[BOARD_SIZE.rows - 3][0] = { ...tile };
-      board[BOARD_SIZE.rows - 4][0] = { ...tile };
-      board[BOARD_SIZE.rows - 4][1] = { ...tile };
-
-      const stoppedBoard = stopPieceDropping(board);
-      const droppedState = Array.from(new Set(compact(stoppedBoard.flat()).map(t => t.dropped)));
-
-      expect(droppedState).toEqual([true]);
-    });
-
-    it('stops a piece if it collides with another piece', () => {
-      const tile = compact(randomTetromino()[0])[0];
-      const board = emptyBoard();
-
-      // dropped tiles
-      board[BOARD_SIZE.rows - 1][4] = { ...tile, dropped: true };
-      board[BOARD_SIZE.rows - 1][5] = { ...tile, dropped: true };
-      board[BOARD_SIZE.rows - 2][3] = { ...tile, dropped: true };
-      board[BOARD_SIZE.rows - 2][4] = { ...tile, dropped: true };
-
-      // dropping piece
-      board[BOARD_SIZE.rows - 3][3] = { ...tile };
-      board[BOARD_SIZE.rows - 3][4] = { ...tile };
-      board[BOARD_SIZE.rows - 3][5] = { ...tile };
-      board[BOARD_SIZE.rows - 3][6] = { ...tile };
-      board[BOARD_SIZE.rows - 4][3] = { ...tile };
-
-      const stoppedBoard = stopPieceDropping(board);
-      const droppedState = Array.from(new Set(compact(stoppedBoard.flat()).map(t => t.dropped)));
-
-      expect(droppedState).toEqual([true]);
-    });
-
-    it('dose nothing if the piece dose not collide with bottom or another piece', () => {
-      const tile = compact(randomTetromino()[0])[0];
-      const board = emptyBoard();
-
-      // dropped tiles
-      board[BOARD_SIZE.rows - 1][4] = { ...tile, dropped: true };
-      board[BOARD_SIZE.rows - 1][5] = { ...tile, dropped: true };
-      board[BOARD_SIZE.rows - 2][3] = { ...tile, dropped: true };
-      board[BOARD_SIZE.rows - 2][4] = { ...tile, dropped: true };
-
-      // dropping piece
-      board[0][3] = { ...tile };
-      board[0][4] = { ...tile };
-      board[0][5] = { ...tile };
-      board[0][6] = { ...tile };
-
-      const stoppedBoard = stopPieceDropping(board);
-      const droppedState = Array.from(new Set(compact(stoppedBoard.flat()).map(t => t.dropped)));
-
-      expect(droppedState).toContain(false);
     });
   });
 });

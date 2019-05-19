@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import BoardTile from './BoardTile';
 import BoardButton from './BoardButton';
 import { BOARD_SIZE } from '../tetris';
-import { addPieceToBoard, updateBoard, movePieceLeft, movePieceRight } from '../actions';
+import { updateBoard, movePieceLeft, movePieceRight } from '../actions';
 
 const styles = StyleSheet.create({
   board: { flex: 1 },
@@ -63,18 +63,14 @@ class Board extends Component {
   }
 
   render() {
-    const {
-      addPieceToBoard: addPiece,
-      movePieceLeft: moveLeft,
-      movePieceRight: moveRight
-    } = this.props;
+    const { updateBoard: update, movePieceLeft: moveLeft, movePieceRight: moveRight } = this.props;
 
     return (
       <View style={styles.board}>
         {this.renderRows()}
         <View style={styles.menu}>
           <BoardButton icon="md-arrow-round-back" onPress={() => moveLeft()} />
-          <BoardButton icon="md-arrow-round-down" onPress={() => addPiece()} />
+          <BoardButton icon="md-arrow-round-down" onPress={() => update()} />
           <BoardButton icon="md-arrow-round-forward" onPress={() => moveRight()} />
         </View>
       </View>
@@ -83,7 +79,6 @@ class Board extends Component {
 }
 
 Board.propTypes = {
-  addPieceToBoard: PropTypes.func.isRequired,
   movePieceLeft: PropTypes.func.isRequired,
   movePieceRight: PropTypes.func.isRequired,
   updateBoard: PropTypes.func.isRequired
@@ -91,5 +86,5 @@ Board.propTypes = {
 
 export default connect(
   null,
-  { addPieceToBoard, updateBoard, movePieceLeft, movePieceRight }
+  { updateBoard, movePieceLeft, movePieceRight }
 )(Board);

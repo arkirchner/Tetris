@@ -7,8 +7,7 @@ import Board, { INTERVAL } from '../Board';
 import BoardTile from '../BoardTile';
 import BoardButton from '../BoardButton';
 import boardReducer from '../../reducers/board';
-import { movePieceDown, stopPieceDropping } from '../../actions';
-import { ADD_PIECE_TO_BOARD } from '../../actions/types';
+import { updateBoard } from '../../actions';
 
 const middlewares = [thunk];
 const mockStore = configureStore(middlewares);
@@ -34,17 +33,12 @@ describe('Board', () => {
     );
 
     setTimeout(() => {
-      expect(store.getActions()).toEqual([
-        stopPieceDropping(),
-        movePieceDown(),
-        stopPieceDropping(),
-        movePieceDown()
-      ]);
+      expect(store.getActions()).toEqual([updateBoard(), updateBoard()]);
       done();
     }, INTERVAL * 2 + 50);
   });
 
-  it('places a block when a tile is pressed', () => {
+  it('updates the board when a tile is pressed', () => {
     const store = mockStore({ board: boardReducer(undefined, {}) });
     const { getAllByType } = render(
       <Provider store={store}>
@@ -54,6 +48,6 @@ describe('Board', () => {
 
     fireEvent.press(getAllByType(BoardButton)[1]);
 
-    expect(store.getActions()[0].type).toEqual(ADD_PIECE_TO_BOARD);
+    expect(store.getActions()).toEqual([updateBoard()]);
   });
 });

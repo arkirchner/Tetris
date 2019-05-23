@@ -1,6 +1,6 @@
 import boardReducer from '../board';
 import * as tetris from '../../tetris';
-import { updateBoard, addPieceToBoard, movePieceRight, movePieceLeft } from '../../actions';
+import { updateBoard, movePieceRight, movePieceLeft } from '../../actions';
 
 function hasValidBoardSize(board) {
   const distinctRowCount = Array.from(new Set(board.map(row => row.length)));
@@ -25,15 +25,6 @@ describe('boardReducer', () => {
   it('UPDATE_BOARD', () => {
     const syp = jest.spyOn(tetris, 'update');
     const board = boardReducer(undefined, updateBoard());
-    expect(syp).toHaveBeenCalled();
-    hasValidBoardSize(board);
-
-    syp.mockRestore();
-  });
-
-  it('ADD_PIECE_TO_BOARD', () => {
-    const syp = jest.spyOn(tetris, 'addPiece');
-    const board = boardReducer(undefined, addPieceToBoard());
     expect(syp).toHaveBeenCalled();
     hasValidBoardSize(board);
 

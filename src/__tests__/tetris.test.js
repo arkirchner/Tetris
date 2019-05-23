@@ -1,6 +1,6 @@
 import compact from 'lodash/compact';
 import randomTetromino from '../tetrominos';
-import { BOARD_SIZE, emptyBoard, addPiece, update, movePieceLeft, movePieceRight } from '../tetris';
+import { BOARD_SIZE, addPiece, emptyBoard, update, movePieceLeft, movePieceRight } from '../tetris';
 
 describe('tetris', () => {
   it('should return a empty board', () => {
@@ -32,25 +32,30 @@ describe('tetris', () => {
         [null, null, null, null, null, null, null, null, null, null, null, null]
       ]);
     });
-
-    it('no piece is added when the board has a dropping piece', () => {
-      const tile = compact(randomTetromino()[0])[0];
-      const board = emptyBoard();
-
-      // movable tiles
-      board[4][3] = { ...tile };
-      board[4][4] = { ...tile };
-
-      const unchangedBoard = addPiece(board, randomTetromino());
-
-      expect(board).toEqual(unchangedBoard);
-    });
   });
 
   describe('update', () => {
+    it('can add a piece to the board', () => {
+      const piece = randomTetromino();
+      const board = update(emptyBoard(), piece);
+
+      expect(board.slice(0, piece.length + 1)).toEqual([
+        ...piece.map(row => [
+          null,
+          null,
+          null,
+          null,
+          null,
+          ...row,
+          ...Array(7 - row.length).fill(null)
+        ]),
+        [null, null, null, null, null, null, null, null, null, null, null, null]
+      ]);
+    });
+
     it('can move a piece one step down', () => {
       const piece = randomTetromino();
-      const board = update(addPiece(emptyBoard(), piece));
+      const board = update(update(emptyBoard(), piece));
 
       expect(board.slice(0, piece.length + 2)).toEqual([
         [null, null, null, null, null, null, null, null, null, null, null, null],
@@ -128,6 +133,21 @@ describe('tetris', () => {
       const droppedState = Array.from(new Set(compact(stoppedBoard.flat()).map(t => t.dropped)));
 
       expect(droppedState).toContain(false);
+    });
+
+    it('no piece is added when the board has a dropping piece', () => {
+      const tile = compact(randomTetromino()[0])[0];
+      const board = emptyBoard();
+
+      // movable tiles
+      board[4][3] = { ...tile };
+      board[4][4] = { ...tile };
+
+      const unchangedTiles = update(board)
+        .flat()
+        .filter(t => !!t);
+
+      expect(unchangedTiles).toEqual([board[4][3], board[4][4]]);
     });
   });
 

@@ -1,3 +1,5 @@
+import tetrominos from './tetrominos';
+
 export const BOARD_SIZE = { columns: 12, rows: 20 };
 
 export function emptyBoard() {
@@ -11,7 +13,7 @@ function boardNeedsPiece(board) {
 }
 
 function movePieceDown(board) {
-  return board
+  return [...board]
     .reverse()
     .map((row, rowIndex, reversedRows) => {
       const nextRow = reversedRows[rowIndex + 1] || [];
@@ -66,26 +68,26 @@ function stopPieceDropping(board) {
 }
 
 export function addPiece(board, piece) {
-  if (boardNeedsPiece(board)) {
-    return board.map((row, rowIndex) => {
-      const insertAt = BOARD_SIZE.columns / 2 - 1;
-      const pieceRow = piece[rowIndex];
+  return board.map((row, rowIndex) => {
+    const insertAt = BOARD_SIZE.columns / 2 - 1;
+    const pieceRow = piece[rowIndex];
 
-      if (pieceRow) {
-        return row.map((tile, index) => {
-          const tilePiece = pieceRow[index - insertAt];
-          return tilePiece || tile;
-        });
-      }
+    if (pieceRow) {
+      return row.map((tile, index) => {
+        const tilePiece = pieceRow[index - insertAt];
+        return tilePiece || tile;
+      });
+    }
 
-      return row;
-    });
-  }
-
-  return board;
+    return row;
+  });
 }
 
-export function update(board) {
+export function update(board, tetromino = tetrominos()) {
+  if (boardNeedsPiece(board)) {
+    return addPiece(board, tetromino);
+  }
+
   return movePieceDown(stopPieceDropping(board));
 }
 

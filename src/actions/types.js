@@ -1,4 +1,3 @@
-export const ADD_PIECE_TO_BOARD = 'ADD_PIECE_TO_BOARD';
 export const MOVE_PIECE_LEFT = 'MOVE_PIECE_LEFT';
 export const MOVE_PIECE_RIGHT = 'MOVE_PIECE_RIGHT';
 export const UPDATE_BOARD = 'UPDATE_BOARD';

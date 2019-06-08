@@ -8,7 +8,7 @@ import { BOARD_SIZE } from '../tetris';
 import { updateBoard, movePieceLeft, movePieceRight } from '../actions';
 
 const styles = StyleSheet.create({
-  board: { flex: 1 },
+  board: StyleSheet.absoluteFill,
   row: { flex: 1, flexDirection: 'row' },
   menu: {
     position: 'absolute',

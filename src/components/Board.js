@@ -5,10 +5,10 @@ import { connect } from 'react-redux';
 import BoardTile from './BoardTile';
 import BoardButton from './BoardButton';
 import { BOARD_SIZE } from '../tetris';
-import { updateBoard, movePieceLeft, movePieceRight } from '../actions';
+import { updateBoard, movePieceLeft, movePieceRight, rotatePiece } from '../actions';
 
 const styles = StyleSheet.create({
-  board: StyleSheet.absoluteFill,
+  board: { flex: 1 },
   row: { flex: 1, flexDirection: 'row' },
   menu: {
     position: 'absolute',
@@ -63,7 +63,12 @@ class Board extends Component {
   }
 
   render() {
-    const { updateBoard: update, movePieceLeft: moveLeft, movePieceRight: moveRight } = this.props;
+    const {
+      updateBoard: update,
+      movePieceLeft: moveLeft,
+      movePieceRight: moveRight,
+      rotatePiece: rotate
+    } = this.props;
 
     return (
       <View style={styles.board}>
@@ -71,6 +76,7 @@ class Board extends Component {
         <View style={styles.menu}>
           <BoardButton icon="md-arrow-round-back" onPress={() => moveLeft()} />
           <BoardButton icon="md-arrow-round-down" onPress={() => update()} />
+          <BoardButton icon="md-sync" onPress={() => rotate()} />
           <BoardButton icon="md-arrow-round-forward" onPress={() => moveRight()} />
         </View>
       </View>
@@ -81,10 +87,11 @@ class Board extends Component {
 Board.propTypes = {
   movePieceLeft: PropTypes.func.isRequired,
   movePieceRight: PropTypes.func.isRequired,
-  updateBoard: PropTypes.func.isRequired
+  updateBoard: PropTypes.func.isRequired,
+  rotatePiece: PropTypes.func.isRequired
 };
 
 export default connect(
   null,
-  { updateBoard, movePieceLeft, movePieceRight }
+  { updateBoard, movePieceLeft, movePieceRight, rotatePiece }
 )(Board);

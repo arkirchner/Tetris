@@ -1,6 +1,14 @@
 import compact from 'lodash/compact';
 import randomTetromino from '../tetrominos';
-import { BOARD_SIZE, addPiece, emptyBoard, update, movePieceLeft, movePieceRight } from '../tetris';
+import {
+  BOARD_SIZE,
+  addPiece,
+  emptyBoard,
+  update,
+  movePieceLeft,
+  movePieceRight,
+  rotatePiece
+} from '../tetris';
 
 describe('tetris', () => {
   it('should return a empty board', () => {
@@ -232,6 +240,10 @@ describe('tetris', () => {
       board[3][4] = { ...tile };
 
       // fixed tiles
+      board[BOARD_SIZE.rows - 1][3] = { ...tile, dropped: true };
+      board[BOARD_SIZE.rows - 1][4] = { ...tile, dropped: true };
+
+      // fixed tiles
       board[3][2] = { ...tile, dropped: true };
 
       const movedBoard = movePieceLeft(board);
@@ -240,6 +252,119 @@ describe('tetris', () => {
       expect(movedBoard[3][2]).toEqual(board[3][2]);
       expect(movedBoard[3][3]).toEqual(board[3][3]);
       expect(movedBoard[3][4]).toEqual(board[3][4]);
+    });
+  });
+
+  describe('rotatePiece', () => {
+    it('rotates a piece around', () => {
+      const tile = compact(randomTetromino()[0])[0];
+      const board = emptyBoard();
+
+      // rotatoble tiles
+      board[3][5] = { ...tile };
+      board[4][5] = { ...tile, center: true };
+      board[5][5] = { ...tile };
+      board[5][6] = { ...tile };
+
+      // fixed tiles
+      board[BOARD_SIZE.rows - 1][3] = { ...tile, dropped: true };
+      board[BOARD_SIZE.rows - 1][4] = { ...tile, dropped: true };
+
+      const rotatedBoared = rotatePiece(board);
+
+      // moved the movable tiles
+      expect(rotatedBoared.map(r => r.filter(t => t && t.dropped === false)).flat().length).toEqual(
+        4
+      );
+
+      expect(rotatedBoared[4][4]).toEqual(tile);
+      expect(rotatedBoared[4][5]).toEqual({ ...tile, center: true });
+      expect(rotatedBoared[4][6]).toEqual(tile);
+      expect(rotatedBoared[5][6]).toEqual(tile);
+
+      // did not move fixed tiles
+      expect(rotatedBoared[BOARD_SIZE.rows - 1][2]).toBeNull();
+      expect(rotatedBoared[BOARD_SIZE.rows - 1][3]).toEqual(board[BOARD_SIZE.rows - 1][3]);
+      expect(rotatedBoared[BOARD_SIZE.rows - 1][4]).toEqual(board[BOARD_SIZE.rows - 1][4]);
+    });
+
+    it('dose not rotate if a piece is in the way', () => {
+      const tile = compact(randomTetromino()[0])[0];
+      const board = emptyBoard();
+
+      // not rotatoble tiles
+      board[3][5] = { ...tile };
+      board[4][5] = { ...tile, center: true };
+      board[5][5] = { ...tile };
+      board[5][6] = { ...tile };
+
+      // fixed tiles
+      board[4][4] = { ...tile, dropped: true };
+      board[5][4] = { ...tile, dropped: true };
+
+      const unrotatedBoared = rotatePiece(board);
+
+      expect(unrotatedBoared).toEqual(board);
+    });
+
+    it('dose not rotate if a piece goes over the top', () => {
+      const tile = compact(randomTetromino()[0])[0];
+      const board = emptyBoard();
+
+      // not rotatoble tiles
+      board[0][4] = { ...tile };
+      board[0][5] = { ...tile, center: true };
+      board[0][6] = { ...tile };
+      board[0][7] = { ...tile };
+
+      const unrotatedBoared = rotatePiece(board);
+
+      expect(unrotatedBoared).toEqual(board);
+    });
+
+    it('dose not rotate if a piece goes over the bottom', () => {
+      const tile = compact(randomTetromino()[0])[0];
+      const board = emptyBoard();
+
+      // not rotatoble tiles
+      board[BOARD_SIZE.rows - 1][4] = { ...tile };
+      board[BOARD_SIZE.rows - 1][5] = { ...tile, center: true };
+      board[BOARD_SIZE.rows - 1][6] = { ...tile };
+      board[BOARD_SIZE.rows - 1][7] = { ...tile };
+
+      const unrotatedBoared = rotatePiece(board);
+
+      expect(unrotatedBoared).toEqual(board);
+    });
+
+    it('dose not rotate if a piece goes over the left boarder', () => {
+      const tile = compact(randomTetromino()[0])[0];
+      const board = emptyBoard();
+
+      // not rotatoble tiles
+      board[3][0] = { ...tile };
+      board[4][0] = { ...tile, center: true };
+      board[5][0] = { ...tile };
+      board[6][0] = { ...tile };
+
+      const unrotatedBoared = rotatePiece(board);
+
+      expect(unrotatedBoared).toEqual(board);
+    });
+
+    it('dose not rotate if a piece goes over the right boarder', () => {
+      const tile = compact(randomTetromino()[0])[0];
+      const board = emptyBoard();
+
+      // not rotatoble tiles
+      board[3][BOARD_SIZE.columns - 1] = { ...tile };
+      board[4][BOARD_SIZE.columns - 1] = { ...tile, center: true };
+      board[5][BOARD_SIZE.columns - 1] = { ...tile };
+      board[6][BOARD_SIZE.columns - 1] = { ...tile };
+
+      const unrotatedBoared = rotatePiece(board);
+
+      expect(unrotatedBoared).toEqual(board);
     });
   });
 });

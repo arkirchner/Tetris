@@ -164,3 +164,57 @@ export function movePieceRight(board) {
 
   return board;
 }
+
+export function rotatePiece(board) {
+  const movingTiles = board
+    .map((row, rowIndex) =>
+      row.map((tile, columnIndex) =>
+        tile && !tile.dropped ? { tile, rowIndex, columnIndex } : null
+      )
+    )
+    .flat()
+    .filter(Boolean);
+
+  const centerTile = movingTiles.find(movingTile => movingTile.tile.center);
+
+  if (!centerTile) {
+    return board;
+  }
+
+  const { rowIndex: centerRow, columnIndex: centerColumn } = centerTile;
+
+  const movedTiles = movingTiles.map(movingTile => {
+    if (movingTile.tile.center) {
+      return movingTile;
+    }
+
+    const { rowIndex: row, columnIndex: column } = movingTile;
+
+    return {
+      ...movingTile,
+      rowIndex: column + centerRow - centerColumn,
+      columnIndex: row + centerColumn - centerRow
+    };
+  });
+
+  const clearedBord = board.map(row => row.map(tile => (tile && !tile.dropped ? null : tile)));
+
+  const canRotate = movedTiles.every(movedTile => {
+    const { rowIndex: row, columnIndex: column, tile } = movedTile;
+
+    if (
+      (clearedBord[row] && clearedBord[row][column]) ||
+      row < 0 ||
+      row >= BOARD_SIZE.rows ||
+      column < 0 ||
+      column >= BOARD_SIZE.columns
+    ) {
+      return false;
+    }
+
+    clearedBord[row][column] = tile;
+    return true;
+  });
+
+  return canRotate ? clearedBord : board;
+}

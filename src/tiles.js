@@ -8,30 +8,30 @@ const RED = 'red';
 
 const BASE_TILE = { dropped: false };
 
-export function cyan() {
-  return { ...BASE_TILE, color: CYAN };
+export function cyan({ center } = { center: false }) {
+  return { ...BASE_TILE, color: CYAN, center };
 }
 
-export function blue() {
-  return { ...BASE_TILE, color: BLUE };
+export function blue({ center } = { center: false }) {
+  return { ...BASE_TILE, color: BLUE, center };
 }
 
-export function orange() {
-  return { ...BASE_TILE, color: ORANGE };
+export function orange({ center } = { center: false }) {
+  return { ...BASE_TILE, color: ORANGE, center };
 }
 
-export function yellow() {
-  return { ...BASE_TILE, color: YELLOW };
+export function yellow({ center } = { center: false }) {
+  return { ...BASE_TILE, color: YELLOW, center };
 }
 
-export function green() {
-  return { ...BASE_TILE, color: GREEN };
+export function green({ center } = { center: false }) {
+  return { ...BASE_TILE, color: GREEN, center };
 }
 
-export function purple() {
-  return { ...BASE_TILE, color: PURPLE };
+export function purple({ center } = { center: false }) {
+  return { ...BASE_TILE, color: PURPLE, center };
 }
 
-export function red() {
-  return { ...BASE_TILE, color: RED };
+export function red({ center } = { center: false }) {
+  return { ...BASE_TILE, color: RED, center };
 }

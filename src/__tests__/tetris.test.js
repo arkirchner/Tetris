@@ -157,6 +157,29 @@ describe('tetris', () => {
 
       expect(unchangedTiles).toEqual([board[4][3], board[4][4]]);
     });
+
+    it('removes a line when it is full and moves dropped tiles down', () => {
+      const tile = compact(randomTetromino()[0])[0];
+      const board = emptyBoard();
+
+      const lineBeforeFullLine = Array(BOARD_SIZE.rows).fill(null);
+      lineBeforeFullLine[1] = { ...tile, dropped: true };
+      lineBeforeFullLine[4] = { ...tile, dropped: true };
+      const fullLine = Array(BOARD_SIZE.rows).fill({ ...tile, dropped: true });
+      const lineAfterFullLine = Array(BOARD_SIZE.rows).fill(null);
+      lineAfterFullLine[0] = { ...tile, dropped: true };
+      lineAfterFullLine[5] = { ...tile, dropped: true };
+
+      board[BOARD_SIZE.rows - 3] = lineBeforeFullLine;
+      board[BOARD_SIZE.rows - 2] = fullLine;
+      board[BOARD_SIZE.rows - 1] = lineAfterFullLine;
+
+      const boardWithRemovedRow = update(update(board));
+
+      expect(compact(boardWithRemovedRow[BOARD_SIZE.rows - 3])).toEqual([]);
+      expect(boardWithRemovedRow[BOARD_SIZE.rows - 2]).toEqual(lineBeforeFullLine);
+      expect(boardWithRemovedRow[BOARD_SIZE.rows - 1]).toEqual(lineAfterFullLine);
+    });
   });
 
   describe('movePieceRight', () => {

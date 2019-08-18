@@ -83,12 +83,26 @@ export function addPiece(board, piece) {
   });
 }
 
+function removeFullRows(board) {
+  const boardWitoutFullRows = board.filter(row => {
+    return !row.every(t => t && t.dropped);
+  });
+
+  const emptyLineCount = BOARD_SIZE.rows - boardWitoutFullRows.length;
+
+  const emptyLines = Array(emptyLineCount)
+    .fill(null)
+    .map(() => Array(BOARD_SIZE.columns).fill(null));
+
+  return [...emptyLines, ...boardWitoutFullRows];
+}
+
 export function update(board, tetromino = tetrominos()) {
   if (boardNeedsPiece(board)) {
     return addPiece(board, tetromino);
   }
 
-  return movePieceDown(stopPieceDropping(board));
+  return removeFullRows(movePieceDown(stopPieceDropping(board)));
 }
 
 function canMoveToRight(board) {

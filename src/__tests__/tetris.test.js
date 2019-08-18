@@ -10,16 +10,21 @@ import {
   rotatePiece
 } from '../tetris';
 
+function hasValidDimentions(board) {
+  const distinctRowCount = Array.from(new Set(board.map(row => row.length)));
+
+  expect(distinctRowCount).toEqual([BOARD_SIZE.columns]);
+  expect(board.length).toEqual(BOARD_SIZE.rows);
+}
+
 describe('tetris', () => {
   it('should return a empty board', () => {
     const board = emptyBoard();
 
-    const distinctRowCount = Array.from(new Set(board.map(row => row.length)));
     const distinctFieldValues = Array.from(new Set(board.flat()));
 
-    expect(board.length).toEqual(BOARD_SIZE.rows);
-    expect(distinctRowCount).toEqual([BOARD_SIZE.columns]);
     expect(distinctFieldValues).toEqual([null]);
+    hasValidDimentions(board);
   });
 
   describe('addPiece', () => {
@@ -39,6 +44,8 @@ describe('tetris', () => {
         ]),
         [null, null, null, null, null, null, null, null, null, null, null, null]
       ]);
+
+      hasValidDimentions(board);
     });
   });
 
@@ -59,6 +66,8 @@ describe('tetris', () => {
         ]),
         [null, null, null, null, null, null, null, null, null, null, null, null]
       ]);
+
+      hasValidDimentions(board);
     });
 
     it('can move a piece one step down', () => {
@@ -78,6 +87,8 @@ describe('tetris', () => {
         ]),
         [null, null, null, null, null, null, null, null, null, null, null, null]
       ]);
+
+      hasValidDimentions(board);
     });
 
     it('stops a tile dropping before it drops out of the board', () => {
@@ -96,6 +107,8 @@ describe('tetris', () => {
       const droppedState = Array.from(new Set(compact(stoppedBoard.flat()).map(t => t.dropped)));
 
       expect(droppedState).toEqual([true]);
+
+      hasValidDimentions(stoppedBoard);
     });
 
     it('stops a piece if it collides with another piece', () => {
@@ -119,6 +132,8 @@ describe('tetris', () => {
       const droppedState = Array.from(new Set(compact(stoppedBoard.flat()).map(t => t.dropped)));
 
       expect(droppedState).toEqual([true]);
+
+      hasValidDimentions(stoppedBoard);
     });
 
     it('dose nothing if the piece dose not collide with bottom or another piece', () => {
@@ -141,6 +156,8 @@ describe('tetris', () => {
       const droppedState = Array.from(new Set(compact(stoppedBoard.flat()).map(t => t.dropped)));
 
       expect(droppedState).toContain(false);
+
+      hasValidDimentions(stoppedBoard);
     });
 
     it('no piece is added when the board has a dropping piece', () => {
@@ -151,22 +168,23 @@ describe('tetris', () => {
       board[4][3] = { ...tile };
       board[4][4] = { ...tile };
 
-      const unchangedTiles = update(board)
-        .flat()
-        .filter(t => !!t);
+      const unchangedBoard = update(board);
+      const unchangedTiles = unchangedBoard.flat().filter(t => !!t);
 
       expect(unchangedTiles).toEqual([board[4][3], board[4][4]]);
+
+      hasValidDimentions(unchangedBoard);
     });
 
     it('removes a line when it is full and moves dropped tiles down', () => {
       const tile = compact(randomTetromino()[0])[0];
       const board = emptyBoard();
 
-      const lineBeforeFullLine = Array(BOARD_SIZE.rows).fill(null);
+      const lineBeforeFullLine = Array(BOARD_SIZE.columns).fill(null);
       lineBeforeFullLine[1] = { ...tile, dropped: true };
       lineBeforeFullLine[4] = { ...tile, dropped: true };
-      const fullLine = Array(BOARD_SIZE.rows).fill({ ...tile, dropped: true });
-      const lineAfterFullLine = Array(BOARD_SIZE.rows).fill(null);
+      const fullLine = Array(BOARD_SIZE.columns).fill({ ...tile, dropped: true });
+      const lineAfterFullLine = Array(BOARD_SIZE.columns).fill(null);
       lineAfterFullLine[0] = { ...tile, dropped: true };
       lineAfterFullLine[5] = { ...tile, dropped: true };
 
@@ -179,6 +197,8 @@ describe('tetris', () => {
       expect(compact(boardWithRemovedRow[BOARD_SIZE.rows - 3])).toEqual([]);
       expect(boardWithRemovedRow[BOARD_SIZE.rows - 2]).toEqual(lineBeforeFullLine);
       expect(boardWithRemovedRow[BOARD_SIZE.rows - 1]).toEqual(lineAfterFullLine);
+
+      hasValidDimentions(boardWithRemovedRow);
     });
   });
 
@@ -206,6 +226,8 @@ describe('tetris', () => {
       expect(movedBoard[BOARD_SIZE.rows - 1][2]).toBeNull();
       expect(movedBoard[BOARD_SIZE.rows - 1][3]).toEqual(board[BOARD_SIZE.rows - 1][3]);
       expect(movedBoard[BOARD_SIZE.rows - 1][4]).toEqual(board[BOARD_SIZE.rows - 1][4]);
+
+      hasValidDimentions(movedBoard);
     });
 
     it('dose not move the piece if it is blocked', () => {
@@ -225,6 +247,8 @@ describe('tetris', () => {
       expect(movedBoard[3][3]).toEqual(board[3][3]);
       expect(movedBoard[3][4]).toEqual(board[3][4]);
       expect(movedBoard[3][5]).toEqual(board[3][5]);
+
+      hasValidDimentions(movedBoard);
     });
   });
 
@@ -252,6 +276,8 @@ describe('tetris', () => {
       expect(movedBoard[BOARD_SIZE.rows - 1][2]).toBeNull();
       expect(movedBoard[BOARD_SIZE.rows - 1][3]).toEqual(board[BOARD_SIZE.rows - 1][3]);
       expect(movedBoard[BOARD_SIZE.rows - 1][4]).toEqual(board[BOARD_SIZE.rows - 1][4]);
+
+      hasValidDimentions(movedBoard);
     });
 
     it('dose not move the piece if it is blocked', () => {
@@ -275,6 +301,8 @@ describe('tetris', () => {
       expect(movedBoard[3][2]).toEqual(board[3][2]);
       expect(movedBoard[3][3]).toEqual(board[3][3]);
       expect(movedBoard[3][4]).toEqual(board[3][4]);
+
+      hasValidDimentions(movedBoard);
     });
   });
 
@@ -309,6 +337,8 @@ describe('tetris', () => {
       expect(rotatedBoared[BOARD_SIZE.rows - 1][2]).toBeNull();
       expect(rotatedBoared[BOARD_SIZE.rows - 1][3]).toEqual(board[BOARD_SIZE.rows - 1][3]);
       expect(rotatedBoared[BOARD_SIZE.rows - 1][4]).toEqual(board[BOARD_SIZE.rows - 1][4]);
+
+      hasValidDimentions(rotatedBoared);
     });
 
     it('dose not rotate if a piece is in the way', () => {
@@ -328,6 +358,8 @@ describe('tetris', () => {
       const unrotatedBoared = rotatePiece(board);
 
       expect(unrotatedBoared).toEqual(board);
+
+      hasValidDimentions(unrotatedBoared);
     });
 
     it('dose not rotate if a piece goes over the top', () => {
@@ -343,6 +375,8 @@ describe('tetris', () => {
       const unrotatedBoared = rotatePiece(board);
 
       expect(unrotatedBoared).toEqual(board);
+
+      hasValidDimentions(unrotatedBoared);
     });
 
     it('dose not rotate if a piece goes over the bottom', () => {
@@ -358,6 +392,8 @@ describe('tetris', () => {
       const unrotatedBoared = rotatePiece(board);
 
       expect(unrotatedBoared).toEqual(board);
+
+      hasValidDimentions(unrotatedBoared);
     });
 
     it('dose not rotate if a piece goes over the left boarder', () => {
@@ -373,6 +409,8 @@ describe('tetris', () => {
       const unrotatedBoared = rotatePiece(board);
 
       expect(unrotatedBoared).toEqual(board);
+
+      hasValidDimentions(unrotatedBoared);
     });
 
     it('dose not rotate if a piece goes over the right boarder', () => {
@@ -388,6 +426,8 @@ describe('tetris', () => {
       const unrotatedBoared = rotatePiece(board);
 
       expect(unrotatedBoared).toEqual(board);
+
+      hasValidDimentions(unrotatedBoared);
     });
   });
 });

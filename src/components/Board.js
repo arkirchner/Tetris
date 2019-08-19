@@ -5,7 +5,14 @@ import { connect } from 'react-redux';
 import BoardTile from './BoardTile';
 import BoardButton from './BoardButton';
 import { BOARD_SIZE } from '../tetris';
-import { updateBoard, movePieceLeft, movePieceRight, rotatePiece } from '../actions';
+import {
+  startGame,
+  stopGame,
+  updateBoard,
+  movePieceLeft,
+  movePieceRight,
+  rotatePiece
+} from '../actions';
 
 const styles = StyleSheet.create({
   board: { flex: 1 },
@@ -33,13 +40,15 @@ export const INTERVAL = 500;
 
 class Board extends Component {
   componentDidMount() {
-    const { updateBoard: update } = this.props;
+    const { startGame: start } = this.props;
 
-    this.dropInterval = setInterval(update, INTERVAL);
+    start();
   }
 
   componentWillUnmount() {
-    clearInterval(this.dorpInterval);
+    const { stopGame: stop } = this.props;
+
+    stop();
   }
 
   renderRows() {
@@ -88,10 +97,12 @@ Board.propTypes = {
   movePieceLeft: PropTypes.func.isRequired,
   movePieceRight: PropTypes.func.isRequired,
   updateBoard: PropTypes.func.isRequired,
-  rotatePiece: PropTypes.func.isRequired
+  rotatePiece: PropTypes.func.isRequired,
+  startGame: PropTypes.func.isRequired,
+  stopGame: PropTypes.func.isRequired
 };
 
 export default connect(
   null,
-  { updateBoard, movePieceLeft, movePieceRight, rotatePiece }
+  { startGame, stopGame, updateBoard, movePieceLeft, movePieceRight, rotatePiece }
 )(Board);
